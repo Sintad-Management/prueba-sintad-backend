@@ -1,7 +1,6 @@
-package com.sintad.management.administration.interfaces.rest.resources;
+package com.sintad.management.administration.interfaces.rest.resources.entidad;
 
-public record EntidadResource(
-        Long id,
+public record CreateEntidadResource(
         Long tipoDocumentoId,
         String nroDocumento,
         String razonSocial,

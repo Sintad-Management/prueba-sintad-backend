@@ -1,5 +1,7 @@
 package com.sintad.management.administration.domain.model.aggregates;
 
+import com.sintad.management.administration.domain.model.commands.CreateEntidadCommand;
+import com.sintad.management.administration.domain.model.commands.UpdateEntidadCommand;
 import com.sintad.management.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,5 +43,26 @@ public class Entidad extends AuditableAbstractAggregateRoot<Entidad> {
     @Column(name = "estado", nullable = false)
     private Boolean estado;
 
+    public Entidad(CreateEntidadCommand command, TipoDocumento tipoDocumento, TipoContribuyente tipoContribuyente) {
+        this.tipoDocumento = tipoDocumento;
+        this.nroDocumento = command.nroDocumento();
+        this.razonSocial = command.razonSocial();
+        this.nombreComercial = command.nombreComercial();
+        this.tipoContribuyente = tipoContribuyente;
+        this.direccion = command.direccion();
+        this.telefono = command.telefono();
+        this.estado = command.estado();
+    }
 
+    public Entidad updateInformation(UpdateEntidadCommand command, TipoDocumento tipoDocumento, TipoContribuyente tipoContribuyente) {
+        this.tipoDocumento = tipoDocumento;
+        this.nroDocumento = command.nroDocumento();
+        this.razonSocial = command.razonSocial();
+        this.nombreComercial = command.nombreComercial();
+        this.tipoContribuyente = tipoContribuyente;
+        this.direccion = command.direccion();
+        this.telefono = command.telefono();
+        this.estado = command.estado();
+        return this;
+    }
 }

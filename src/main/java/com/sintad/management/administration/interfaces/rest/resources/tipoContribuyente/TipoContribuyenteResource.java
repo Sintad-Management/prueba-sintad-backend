@@ -1,8 +1,8 @@
-package com.sintad.management.administration.interfaces.rest.resources.tipoContribuyente;
+    package com.sintad.management.administration.interfaces.rest.resources.tipoContribuyente;
 
-public record TipoContribuyenteResource(
-        Long id,
-        String nombre,
-        Boolean estado
-) {
-}
+    public record TipoContribuyenteResource(
+            Long id,
+            String nombre,
+            Boolean estado
+    ) {
+    }
