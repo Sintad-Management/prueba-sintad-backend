@@ -4,9 +4,9 @@ import com.sintad.management.administration.domain.model.commands.UpdateTipoCont
 import com.sintad.management.administration.interfaces.rest.resources.tipoContribuyente.UpdateTipoContribuyenteResource;
 
 public class UpdateTipoContribuyenteCommandFromResourceAssembler {
-    public static UpdateTipoContribuyenteCommand toCommandFromResource(UpdateTipoContribuyenteResource resource) {
+    public static UpdateTipoContribuyenteCommand toCommandFromResource(Long tipoContribuyenteId, UpdateTipoContribuyenteResource resource) {
         return new UpdateTipoContribuyenteCommand(
-                resource.id(),
+                tipoContribuyenteId,
                 resource.nombre(),
                 resource.estado()
         );

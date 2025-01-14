@@ -1,10 +1,7 @@
 package com.sintad.management.administration.domain.model.aggregates;
 
 import com.sintad.management.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "tb_entidad")
+@Entity
 public class Entidad extends AuditableAbstractAggregateRoot<Entidad> {
 
     @ManyToOne
@@ -42,4 +40,6 @@ public class Entidad extends AuditableAbstractAggregateRoot<Entidad> {
 
     @Column(name = "estado", nullable = false)
     private Boolean estado;
+
+
 }

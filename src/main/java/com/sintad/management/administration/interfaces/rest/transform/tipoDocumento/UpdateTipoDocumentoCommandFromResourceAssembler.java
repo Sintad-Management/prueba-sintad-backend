@@ -3,9 +3,9 @@ import com.sintad.management.administration.domain.model.commands.UpdateTipoDocu
 import com.sintad.management.administration.interfaces.rest.resources.tipoDocumento.UpdateTipoDocumentoResource;
 
 public class UpdateTipoDocumentoCommandFromResourceAssembler {
-    public static UpdateTipoDocumentoCommand toCommandFromResource(UpdateTipoDocumentoResource resource) {
+    public static UpdateTipoDocumentoCommand toCommandFromResource(Long tipoDocumentoId,UpdateTipoDocumentoResource resource) {
         return new UpdateTipoDocumentoCommand(
-                resource.id(),
+                tipoDocumentoId,
                 resource.codigo(),
                 resource.nombre(),
                 resource.descripcion(),

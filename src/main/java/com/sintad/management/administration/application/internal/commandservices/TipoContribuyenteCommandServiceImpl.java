@@ -21,9 +21,7 @@ public class TipoContribuyenteCommandServiceImpl implements TipoContribuyenteCom
 
     @Override
     public Long handle(CreateTipoContribuyenteCommand command) {
-        TipoContribuyente tipoContribuyente = new TipoContribuyente();
-        tipoContribuyente.setNombre(command.nombre());
-        tipoContribuyente.setEstado(command.estado());
+        TipoContribuyente tipoContribuyente = new TipoContribuyente(command);
         tipoContribuyente = tipoContribuyenteRepository.save(tipoContribuyente);
         return tipoContribuyente.getId();
     }
@@ -33,8 +31,7 @@ public class TipoContribuyenteCommandServiceImpl implements TipoContribuyenteCom
         Optional<TipoContribuyente> optionalTipoContribuyente = tipoContribuyenteRepository.findById(command.tipoContribuyenteId());
         if (optionalTipoContribuyente.isPresent()) {
             TipoContribuyente tipoContribuyente = optionalTipoContribuyente.get();
-            tipoContribuyente.setNombre(command.nombre());
-            tipoContribuyente.setEstado(command.estado());
+            tipoContribuyente.updateInformation(command.nombre(), command.estado());
             tipoContribuyente = tipoContribuyenteRepository.save(tipoContribuyente);
             return Optional.of(tipoContribuyente);
         } else {
