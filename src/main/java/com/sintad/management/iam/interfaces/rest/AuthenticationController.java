@@ -3,12 +3,17 @@ package com.sintad.management.iam.interfaces.rest;
 import com.sintad.management.iam.domain.services.UserCommandService;
 import com.sintad.management.iam.interfaces.rest.resources.AuthenticatedUserResource;
 import com.sintad.management.iam.interfaces.rest.resources.SignInResource;
+import com.sintad.management.iam.interfaces.rest.resources.SignUpResource;
+import com.sintad.management.iam.interfaces.rest.resources.UserResource;
 import com.sintad.management.iam.interfaces.rest.transform.AuthenticatedUserResourceFromEntityAssembler;
 import com.sintad.management.iam.interfaces.rest.transform.SignInCommandFromResourceAssembler;
+import com.sintad.management.iam.interfaces.rest.transform.SignUpCommandFromResourceAssembler;
+import com.sintad.management.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,15 +32,22 @@ public class AuthenticationController {
         this.userCommandService = userCommandService;
     }
 
-    /*
+
     @PostMapping("/sign-up")
     @Operation(summary = "Sign up a new user", description = "Sign up a new user with the provided username, password, and roles.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User created successfully."),
             @ApiResponse(responseCode = "400", description = "Bad request.")
     })
-    public ResponseEntity<User>
-    */
+    public ResponseEntity<UserResource> signup (@RequestBody SignUpResource resource){
+        var signUpCommand = SignUpCommandFromResourceAssembler.toCommandFromResource(resource);
+        var user = userCommandService.handle(signUpCommand);
+        if (user.isEmpty()) return ResponseEntity.badRequest().build();
+        var userEntity = user.get();
+        var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(userEntity);
+        return new ResponseEntity<>(userResource, HttpStatus.CREATED);
+    }
+
 
     @PostMapping("/sign-in")
     @Operation(summary = "Sign in a user", description = "Sign in a user with the provided username and password.")
