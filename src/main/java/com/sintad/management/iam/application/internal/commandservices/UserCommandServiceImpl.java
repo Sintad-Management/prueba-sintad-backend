@@ -8,6 +8,8 @@ import com.sintad.management.iam.infrastructure.authorization.sfs.services.JwtSe
 import com.sintad.management.iam.infrastructure.persistence.jpa.repositories.UserRepository;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,21 +20,50 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserCommandServiceImpl(UserRepository userRepository, JwtService jwtService, AuthenticationManager authenticationManager) {
+    public UserCommandServiceImpl(
+            UserRepository userRepository,
+            JwtService jwtService,
+            AuthenticationManager authenticationManager,
+            PasswordEncoder passwordEncoder
+    ) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
     }
-
 
     @Override
     public Optional<User> handle(SignUpCommand command) {
-        return Optional.empty();
+        if (userRepository.existsByEmail(command.email())) {
+            throw new RuntimeException("Email ya existe");
+        }
+
+        // Usar la instancia de PasswordEncoder inyectada
+        String encodedPassword = passwordEncoder.encode(command.password());
+
+        User user = new User(command.name(), command.email(), encodedPassword);
+        userRepository.save(user);
+
+        return Optional.of(user);
     }
 
     @Override
     public Optional<ImmutablePair<User, String>> handle(SignInCommand command) {
-        return Optional.empty();
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(command.email(), command.password())
+            );
+        } catch (Exception ex) {
+            throw new RuntimeException("Invalid email or password.");
+        }
+
+        User user = userRepository.findByEmail(command.email())
+                .orElseThrow(() -> new RuntimeException("User not found."));
+
+        String jwtToken = jwtService.generateToken(user);
+
+        return Optional.of(ImmutablePair.of(user, jwtToken));
     }
 }
