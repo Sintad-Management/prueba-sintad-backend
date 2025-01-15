@@ -8,6 +8,8 @@ import com.sintad.management.administration.domain.services.EntidadCommandServic
 import com.sintad.management.administration.infrastructure.persistence.jpa.repositories.EntidadRepository;
 import com.sintad.management.administration.infrastructure.persistence.jpa.repositories.TipoContribuyenteRepository;
 import com.sintad.management.administration.infrastructure.persistence.jpa.repositories.TipoDocumentoRepository;
+import com.sintad.management.shared.exception.DuplicateEntryException;
+import com.sintad.management.shared.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -27,11 +29,14 @@ public class EntidadCommandServiceImpl implements EntidadCommandService {
 
     @Override
     public Long handle(CreateEntidadCommand command) {
+        if (entidadRepository.existsByNroDocumento(command.nroDocumento())) {
+            throw new DuplicateEntryException("Entidad con número de documento %s ya existe".formatted(command.nroDocumento()));
+        }
         var tipoDocumento = tipoDocumentoRepository.findById(command.tipoDocumentoId())
-                .orElseThrow(() -> new IllegalArgumentException("TipoDocumento con ID %d no encontrado".formatted(command.tipoDocumentoId())));
+                .orElseThrow(() -> new NotFoundException("TipoDocumento con ID %d no encontrado".formatted(command.tipoDocumentoId())));
 
         var tipoContribuyente = tipoContribuyenteRepository.findById(command.tipoContribuyenteId())
-                .orElseThrow(() -> new IllegalArgumentException("TipoContribuyente con ID %d no encontrado".formatted(command.tipoContribuyenteId())));
+                .orElseThrow(() -> new NotFoundException("TipoContribuyente con ID %d no encontrado".formatted(command.tipoContribuyenteId())));
 
         var entidad = new Entidad(command, tipoDocumento, tipoContribuyente);
 
@@ -43,13 +48,13 @@ public class EntidadCommandServiceImpl implements EntidadCommandService {
     public Optional<Entidad> handle(UpdateEntidadCommand command) {
 
         var entidad = entidadRepository.findById(command.entidadId())
-                .orElseThrow(() -> new IllegalArgumentException("Entidad con ID %d no encontrada".formatted(command.entidadId())));
+                .orElseThrow(() -> new NotFoundException("Entidad con ID %d no encontrada".formatted(command.entidadId())));
 
         var tipoDocumento = tipoDocumentoRepository.findById(command.tipoDocumentoId())
-                .orElseThrow(() -> new IllegalArgumentException("TipoDocumento con ID %d no encontrado".formatted(command.tipoDocumentoId())));
+                .orElseThrow(() -> new NotFoundException("TipoDocumento con ID %d no encontrado".formatted(command.tipoDocumentoId())));
 
         var tipoContribuyente = tipoContribuyenteRepository.findById(command.tipoContribuyenteId())
-                .orElseThrow(() -> new IllegalArgumentException("TipoContribuyente con ID %d no encontrado".formatted(command.tipoContribuyenteId())));
+                .orElseThrow(() -> new NotFoundException("TipoContribuyente con ID %d no encontrado".formatted(command.tipoContribuyenteId())));
 
         entidad.updateInformation(command, tipoDocumento, tipoContribuyente);
 
@@ -60,7 +65,7 @@ public class EntidadCommandServiceImpl implements EntidadCommandService {
     @Override
     public void handle(DeleteEntidadCommand command) {
         if (!entidadRepository.existsById(command.entidadId())) {
-            throw new IllegalArgumentException("Id de entidad %s no encontrado".formatted(command.entidadId()));
+            throw new NotFoundException("Id de entidad %s no encontrado".formatted(command.entidadId()));
         }
         entidadRepository.deleteById(command.entidadId());
     }

@@ -17,27 +17,27 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Entidad extends AuditableAbstractAggregateRoot<Entidad> {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_tipo_documento", nullable = false)
     private TipoDocumento tipoDocumento;
 
-    @Column(name = "nro_documento", length = 20, nullable = false)
+    @Column(name = "nro_documento", length = 20, nullable = false, unique = true)
     private String nroDocumento;
 
-    @Column(name = "razon_social", length = 255, nullable = false)
+    @Column(name = "razon_social", length = 255, nullable = false,unique = true)
     private String razonSocial;
 
-    @Column(name = "nombre_comercial", length = 255, nullable = true)
+    @Column(name = "nombre_comercial", length = 255, nullable = true, unique = true)
     private String nombreComercial;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_tipo_contribuyente", nullable = false)
     private TipoContribuyente tipoContribuyente;
 
     @Column(name = "direccion", length = 255, nullable = false)
     private String direccion;
 
-    @Column(name = "telefono", length = 50, nullable = true)
+    @Column(name = "telefono", length = 9, nullable = true)
     private String telefono;
 
     @Column(name = "estado", nullable = false)

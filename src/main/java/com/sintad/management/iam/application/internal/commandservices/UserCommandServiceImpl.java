@@ -6,6 +6,8 @@ import com.sintad.management.iam.domain.model.commands.SignUpCommand;
 import com.sintad.management.iam.domain.services.UserCommandService;
 import com.sintad.management.iam.infrastructure.authorization.sfs.services.JwtService;
 import com.sintad.management.iam.infrastructure.persistence.jpa.repositories.UserRepository;
+import com.sintad.management.shared.exception.DuplicateEntryException;
+import com.sintad.management.shared.exception.NotFoundException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,7 +39,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     @Override
     public Optional<User> handle(SignUpCommand command) {
         if (userRepository.existsByEmail(command.email())) {
-            throw new RuntimeException("Email ya existe");
+            throw new DuplicateEntryException("El email %s ya existe".formatted(command.email()));
         }
 
         String encodedPassword = passwordEncoder.encode(command.password());
@@ -59,7 +61,7 @@ public class UserCommandServiceImpl implements UserCommandService {
         }
 
         User user = userRepository.findByEmail(command.email())
-                .orElseThrow(() -> new RuntimeException("User not found."));
+                .orElseThrow(() -> new NotFoundException("User not found."));
 
         String jwtToken = jwtService.generateToken(user);
 

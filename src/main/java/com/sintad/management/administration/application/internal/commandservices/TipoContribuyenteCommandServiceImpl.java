@@ -6,6 +6,7 @@ import com.sintad.management.administration.domain.model.commands.DeleteTipoCont
 import com.sintad.management.administration.domain.model.commands.UpdateTipoContribuyenteCommand;
 import com.sintad.management.administration.domain.services.TipoContribuyenteCommandService;
 import com.sintad.management.administration.infrastructure.persistence.jpa.repositories.TipoContribuyenteRepository;
+import com.sintad.management.shared.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -35,14 +36,14 @@ public class TipoContribuyenteCommandServiceImpl implements TipoContribuyenteCom
             tipoContribuyente = tipoContribuyenteRepository.save(tipoContribuyente);
             return Optional.of(tipoContribuyente);
         } else {
-            throw new IllegalArgumentException("Id de tipo de contribuyente %s no encontrado".formatted(command.tipoContribuyenteId()));
+            throw new NotFoundException("Id de tipo de contribuyente %s no encontrado".formatted(command.tipoContribuyenteId()));
         }
     }
 
     @Override
     public void handle(DeleteTipoContribuyenteCommand command) {
         if (!tipoContribuyenteRepository.existsById(command.tipoContribuyenteId())) {
-            throw new IllegalArgumentException("Id de tipo de contribuyente %s no existe".formatted(command.tipoContribuyenteId()));
+            throw new NotFoundException("Id de tipo de contribuyente %s no existe".formatted(command.tipoContribuyenteId()));
         }
         try {
             tipoContribuyenteRepository.deleteById(command.tipoContribuyenteId());

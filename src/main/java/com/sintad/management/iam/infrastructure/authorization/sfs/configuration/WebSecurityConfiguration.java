@@ -53,7 +53,7 @@ public class WebSecurityConfiguration {
                                 ).authenticated()
                                 // Public endpoints
                                 .requestMatchers(
-                                        "/api/v1//authentication/**",
+                                        "/api/v1/authentication/**",
                                         "/actuator/health",
                                         "/v3/api-docs/**",
                                         "/swagger-ui/**",

@@ -6,6 +6,7 @@ import com.sintad.management.administration.domain.model.commands.DeleteTipoDocu
 import com.sintad.management.administration.domain.model.commands.UpdateTipoDocumentoCommand;
 import com.sintad.management.administration.domain.services.TipoDocumentoCommandService;
 import com.sintad.management.administration.infrastructure.persistence.jpa.repositories.TipoDocumentoRepository;
+import com.sintad.management.shared.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -35,14 +36,14 @@ public class TipoDocumentoCommandServiceImpl implements TipoDocumentoCommandServ
             tipoDocumento = tipoDocumentoRepository.save(tipoDocumento);
             return Optional.of(tipoDocumento);
         } else {
-            throw new IllegalArgumentException("Id de tipo de documento %s no encontrado".formatted(command.tipoDocumentoId()));
+            throw new NotFoundException("Id de tipo de documento %s no encontrado".formatted(command.tipoDocumentoId()));
         }
     }
 
     @Override
     public void handle(DeleteTipoDocumentoCommand command) {
         if (!tipoDocumentoRepository.existsById(command.tipoDocumentoId())) {
-            throw new IllegalArgumentException("Id de tipo de documento %s no encontrado".formatted(command.tipoDocumentoId()));
+            throw new NotFoundException("Id de tipo de documento %s no encontrado".formatted(command.tipoDocumentoId()));
         }
         tipoDocumentoRepository.deleteById(command.tipoDocumentoId());
     }
