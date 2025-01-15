@@ -40,7 +40,6 @@ public class UserCommandServiceImpl implements UserCommandService {
             throw new RuntimeException("Email ya existe");
         }
 
-        // Usar la instancia de PasswordEncoder inyectada
         String encodedPassword = passwordEncoder.encode(command.password());
 
         User user = new User(command.name(), command.email(), encodedPassword);
