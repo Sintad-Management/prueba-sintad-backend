@@ -8,64 +8,45 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @ControllerAdvice
-public class RestResponseEntityExceptionHandler {
+public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        List<String> errors = new ArrayList<>();
-        ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.add(fieldName + ": " + errorMessage);
-        });
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", HttpStatus.BAD_REQUEST.value());
-        response.put("errors", errors);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+    @ExceptionHandler(DuplicateEntryException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    protected ResponseEntity<Object> handleDuplicateEntryException(DuplicateEntryException ex) {
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, ex.getMessage(), ex);
+        return buildResponseEntity(apiError);
     }
 
     @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<Map<String, Object>> handleNotFoundException(NotFoundException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", HttpStatus.NOT_FOUND.value());
-        response.put("message", ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    protected ResponseEntity<Object> handleNotFoundException(NotFoundException ex) {
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+        return buildResponseEntity(apiError);
     }
 
-    @ExceptionHandler(DuplicateEntryException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Map<String, Object>> handleSqlIntegrityException(DuplicateEntryException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", HttpStatus.BAD_REQUEST.value());
-        response.put("message", ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(InternalServerErrorException.class)
+    protected ResponseEntity<Object> handleInternalServerErrorException(InternalServerErrorException ex) {
+        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex);
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(TipoContribuyenteDeletionException.class)
+    protected ResponseEntity<Object> handleTipoContribuyenteDeletionException(TipoContribuyenteDeletionException ex) {
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        return buildResponseEntity(apiError);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<Map<String, Object>> handleBadCredentialsException(BadCredentialsException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", HttpStatus.UNAUTHORIZED.value());
-        response.put("message", ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(InternalServerErrorException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<Map<String, Object>> handleInternalServerErrorException(InternalServerErrorException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.put("message", ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
+        return new ResponseEntity<>(apiError, apiError.getStatus());
     }
-
 }
