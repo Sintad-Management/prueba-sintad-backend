@@ -86,7 +86,7 @@ public class TipoDocumentoController {
                 .toList();
         return ResponseEntity.ok(tipoDocumentoResources);
     }
-
+    
     @Operation(summary = "Actualizar un tipo de documento")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Tipo de documento actualizado"),

@@ -7,6 +7,7 @@ import com.sintad.management.administration.domain.model.commands.UpdateTipoCont
 import com.sintad.management.administration.domain.services.TipoContribuyenteCommandService;
 import com.sintad.management.administration.infrastructure.persistence.jpa.repositories.TipoContribuyenteRepository;
 import com.sintad.management.shared.exception.NotFoundException;
+import com.sintad.management.shared.exception.TipoContribuyenteDeletionException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -48,7 +49,7 @@ public class TipoContribuyenteCommandServiceImpl implements TipoContribuyenteCom
         try {
             tipoContribuyenteRepository.deleteById(command.tipoContribuyenteId());
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error al eliminar el tipo de contribuyente: %s".formatted(e.getMessage()));
+            throw new TipoContribuyenteDeletionException("Error al eliminar el tipo de contribuyente: %s".formatted(e.getMessage()));
         }
     }
 }
